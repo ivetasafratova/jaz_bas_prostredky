@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kvíz: Jazykové a básnické prostředky</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-color: #ffffff;
+            --text-color: #2d3748;
+            --primary-color: #4a90e2;
+            --primary-hover: #357abd;
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .quiz-container {
+            background-color: var(--card-color);
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 650px;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-top: 0;
+            color: #1a202c;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            text-align: center;
+        }
+
+        .progress {
+            font-size: 14px;
+            color: #718096;
+            margin-bottom: 20px;
+            text-align: right;
+            font-weight: bold;
+        }
+
+        .question {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .option-item {
+            background-color: #f8fafc;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+        }
+
+        .option-item:hover {
+            background-color: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        .option-item.correct {
+            background-color: #e8f8f0;
+            border-color: var(--success-color);
+            color: #1e7e34;
+            font-weight: 600;
+        }
+
+        .option-item.wrong {
+            background-color: #fde8e8;
+            border-color: var(--error-color);
+            color: #bd2130;
+        }
+
+        .option-item.disabled {
+            pointer-events: none;
+        }
+
+        .btn-next {
+            display: block;
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.2s;
+            display: none; /* Skryté, dokud se neodpoví */
+        }
+
+        .btn-next:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .results {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .results h2 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .score {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #2d3748;
+        }
+
+        .btn-restart {
+            background-color: var(--text-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-restart:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div id="quiz-box">
+        <h1>Kvíz: Jazykové a básnické prostředky</h1>
+        <div class="progress" id="progress">Otázka 1 z X</div>
+        <div class="question" id="question-text">Načítání otázky...</div>
+        <ul class="options-list" id="options-container">
+            </ul>
+        <button class="btn-next" id="btn-next" onclick="nextQuestion()">Další otázka</button>
+    </div>
+
+    <div id="result-box" style="display: none;">
+        <div class="results">
+            <h2>Kvíz dokončen!</h2>
+            <p>Tvoje úspěšnost:</p>
+            <div class="score" id="score-text">0 / 0</div>
+            <p id="evaluation-text"></p>
+            <button class="btn-restart" onclick="restartQuiz()">Spustit znovu</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const quizData = [
+        {
+            q: "Jak se nazývá opakování stejných hlásek na začátku sousedních slov (např. 'plyne peníz po penízku')?",
+            options: ["Anafora", "Aliterace", "Epifora", "Epizeuxis"],
+            correct: 1
+        },
+        {
+            q: "Který básnický prostředek je definován jako opakování slov na začátku veršů?",
+            options: ["Anafora", "Epifora", "Epanastrofa", "Asyndeton"],
+            correct: 0
+        },
+        {
+            q: "Co je to epifora?",
+            options: ["Opakování slov v jednom verši za sebou", "Opakování na konci jednoho verše a na začátku následujícího", "Opakování slov na konci veršů", "Vynechávání spojovacích výrazů"],
+            correct: 2
+        },
+        {
+            q: "Jak se nazývá figura, při které dochází k opakování slov na konci jednoho verše a na začátku následujícího?",
+            options: ["Epizeuxis", "Polysyndeton", "Inverze", "Epanastrofa"],
+            correct: 3
+        },
+        {
+            q: "Když autor v jednom verši zopakuje slova hned za sebou, použil:",
+            options: ["Epizeuxis", "Aliteraci", "Inverzi", "Apostrofu"],
+            correct: 0
+        },
+        {
+            q: "Jak se nazývá vynechávání (zhutňování) spojovacích výrazů mezi slovy či větami?",
+            options: ["Polysyndeton", "Asyndeton", "Elipsa", "Aposiopese"],
+            correct: 1
+        },
+        {
+            q: "Nadměrné užití spojovacích výrazů v textu označujeme jako:",
+            options: ["Asyndeton", "Inverze", "Polysyndeton", "Hyperbola"],
+            correct: 2
+        },
+        {
+            q: "Změněný slovosled nebo změněné pořadí slov v básni se nazývá:",
+            options: ["Inverze", "Apostrofa", "Oxymoron", "Epanastrofa"],
+            correct: 0
+        },
+        {
+            q: "Co znamená pojem apostrofa?",
+            options: ["Zveličování a přehánění skutečnosti", "Nedokončená výpověď označená třemi tečkami", "Básnické oslovení osob, věcí nebo neživých objektů", "Položená otázka, na kterou nečekáme odpověď"],
+            correct: 2
+        },
+        {
+            q: "Položená otázka, na kterou autor nečeká odpověď, je:",
+            options: ["Aposiopese", "Řečnická otázka", "Ironie", "Alegorie"],
+            correct: 1
+        },
+        {
+            q: "Jak se nazývá stylistická figura založená na zveličování a přehánění skutečnosti?",
+            options: ["Eufemismus", "Dysfemismus", "Personifikace", "Hyperbola"],
+            correct: 3
+        },
+        {
+            q: "Přikrášlující pojmenování nepříjemné události, její zjemňování či zlehčování je:",
+            options: ["Dysfemismus", "Eufemismus", "Metafora", "Epiteton"],
+            correct: 1
+        },
+        {
+            q: "Zhrubění události nebo použití drsnějšího výrazu pro běžnou skutečnost se nazývá:",
+            options: ["Dysfemismus", "Oxymoron", "Synekdocha", "Asyndeton"],
+            correct: 0
+        },
+        {
+            q: "Co je to elipsa?",
+            options: ["Odmlčení a nedokončená výpověď", "Vypouštění slov, která si můžeme domyslet", "Skrytý pravý význam sdělení", "Polidštění neživých věcí"],
+            correct: 1
+        },
+        {
+            q: "Jak se nazývá odmlčení, výpustka či nedokončená výpověď často graficky značená třemi tečkami?",
+            options: ["Elipsa", "Aposiopese", "Asyndeton", "Symbol"],
+            correct: 1
+        },
+        {
+            q: "Co jsou to tropy?",
+            options: ["Slovosledné a syntaktické básnické figury", "Slova typická pro publicistický styl", "Nepřímá neboli obrazná pojmenování skutečnosti založená na přenesení významu", "Slova, která již zastarala a nepoužívají se"],
+            correct: 2
+        },
+        {
+            q: "Přenesení významu na základě vnější podobnosti či skutečnosti se nazývá:",
+            options: ["Metonymie", "Synekdocha", "Metafora", "Personifikace"],
+            correct: 2
+        },
+        {
+            q: "Který tropus je založen na přenesení významu na základě vnitřní souvislosti?",
+            options: ["Metafora", "Metonymie", "Oxymoron", "Alegorie"],
+            correct: 1
+        },
+        {
+            q: "Nahrazení celku za část nebo části za celek (např. 'střecha nad hlavou' místo dům) je:",
+            options: ["Synekdocha", "Metonymie", "Epiteton", "Přirovnání"],
+            correct: 0
+        },
+        {
+            q: "Jak se nazývá polidštění neboli přenesení lidských vlastností na zvířata či neživé věci?",
+            options: ["Alegorie", "Symbol", "Personifikace", "Hyperbola"],
+            correct: 2
+        },
+        {
+            q: "Spojení slov 'chytrý jako sova' je příkladem pro:",
+            options: ["Epiteton", "Přirovnání", "Oxymoron", "Metaforu"],
+            correct: 1
+        },
+        {
+            q: "Co vyjadřuje pojem epiteton?",
+            options: ["Básnický přívlastek", "Zjemňující vyjádření", "Nesmyslné spojení slov", "Znak pro jinou skutečnost"],
+            correct: 0
+        },
+        {
+            q: "Jak se nazývá logicky nesmyslné spojení slov protichůdného významu (např. 'živá mrtvola')?",
+            options: ["Ironie", "Oxymoron", "Synekdocha", "Aliterace"],
+            correct: 1
+        },
+        {
+            q: "Vyslovení přesného opaku toho, co si ve skutečnosti myslíme, označujeme jako:",
+            options: ["Ironie", "Alegorie", "Eufemismus", "Aposiopese"],
+            correct: 0
+        },
+        {
+            q: "Který výraz označuje skrytý pravý význam toho, co si přejeme sdělit (jinotaj)?",
+            options: ["Symbol", "Metonymie", "Alegorie", "Epizeuxis"],
+            correct: 2
+        },
+        {
+            q: "Znak pro jinou skutečnost, který nepřímo vypovídá a rozzostřuje význam, se nazývá:",
+            options: ["Symbol", "Epiteton", "Elipsa", "Inverze"],
+            correct: 0
+        },
+        {
+            q: "Jak se nazývá mluva typická pro určitou společenskou nebo zájmovou skupinu (např. studentský...)?",
+            options: ["Argot", "Slang", "Profesní mluva", "Nářečí"],
+            correct: 1
+        },
+        {
+            q: "Mluva společenské spodiny (zloději, vězni), která slouží k utajení komunikace, je:",
+            options: ["Slang", "Profesní mluva", "Argot", "Obecná čeština"],
+            correct: 2
+        },
+        {
+            q: "Jak označujeme slova, která pojmenovávají zaniklé historické skutečnosti (např. palicát, ranohojič)?",
+            options: ["Archaismy", "Historismy", "Neologismy", "Termíny"],
+            correct: 1
+        },
+        {
+            q: "Slova nově utvořená nebo nově přejatá do jazyka se nazývají:",
+            options: ["Poetismy", "Publicismy", "Historismy", "Neologismy"],
+            correct: 3
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    const quizBox = document.getElementById('quiz-box');
+    const resultBox = document.getElementById('result-box');
+    const progressEl = document.getElementById('progress');
+    const questionTextEl = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const btnNext = document.getElementById('btn-next');
+    const scoreTextEl = document.getElementById('score-text');
+    const evaluationTextEl = document.getElementById('evaluation-text');
+
+    function loadQuestion() {
+        btnNext.style.display = 'none';
+        optionsContainer.innerHTML = '';
+        
+        const currentQuestion = quizData[currentQuestionIndex];
+        
+        progressEl.innerText = `Otázka ${currentQuestionIndex + 1} z ${quizData.length}`;
+        questionTextEl.innerText = currentQuestion.q;
+        
+        currentQuestion.options.forEach((option, index) => {
+            const li = document.createElement('li');
+            li.innerText = option;
+            li.classList.add('option-item');
+            li.onclick = () => selectOption(index, li);
+            optionsContainer.appendChild(li);
+        });
+    }
+
+    function selectOption(selectedIndex, selectedElement) {
+        const currentQuestion = quizData[currentQuestionIndex];
+        const items = optionsContainer.querySelectorAll('.option-item');
+        
+        items.forEach((item, index) => {
+            item.classList.add('disabled');
+            if (index === currentQuestion.correct) {
+                item.classList.add('correct');
+            }
+        });
+
+        if (selectedIndex === currentQuestion.correct) {
+            score++;
+        } else {
+            selectedElement.classList.add('wrong');
+        }
+
+        btnNext.style.display = 'block';
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < quizData.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        quizBox.style.display = 'none';
+        resultBox.style.display = 'block';
+        scoreTextEl.innerText = `${score} / ${quizData.length}`;
+        
+        const percentage = (score / quizData.length) * 100;
+        if (percentage >= 90) {
+            evaluationTextEl.innerText = "Výborně! Jazykové prostředky ovládáš na jedničku.";
+        } else if (percentage >= 75) {
+            evaluationTextEl.innerText = "Dobrá práce! Máš velmi slušný přehled.";
+        } else if (percentage >= 60) {
+            evaluationTextEl.innerText = "Průměrný výsledek. Chtělo by to ještě trochu zopakovat.";
+        } else {
+            evaluationTextEl.innerText = "Tady máme mezery. Doporučuji si pojmy projít znovu.";
+        }
+    }
+
+    function restartQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        resultBox.style.display = 'none';
+        quizBox.style.display = 'block';
+        loadQuestion();
+    }
+
+    // Inicializace kvízu při načtení stránky
+    loadQuestion();
+</script>
+
+</body>
+</html>
